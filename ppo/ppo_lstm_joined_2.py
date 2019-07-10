@@ -53,7 +53,7 @@ class PPO(object):
             self.actions = tf.placeholder(tf.float32, [None, self.a_dim], 'action')
         else:
             self.discrete = True
-            self.s_dim, self.a_dim = environment.observation_space.shape, environment.action_space.n
+            self.s_dim, self.a_dim = environment.observation_space.shape, environment.action_space.shape[0]  # changed from action_space.shape.n
             self.actions = tf.placeholder(tf.int32, [None, 1], 'action')
         self.cnn = len(self.s_dim) == 3
         self.greyscale = greyscale  # If not greyscale and using RGB, make sure to divide the images by 255
