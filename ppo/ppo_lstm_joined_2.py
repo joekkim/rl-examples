@@ -20,7 +20,7 @@ OUTPUT_RESULTS_DIR = "./"
 
 
 ENV = 'CarRacing-v0'
-EP_MAX = 10000
+EP_MAX = 100 #10000
 GAMMA = 0.99
 LAMBDA = 0.95
 ENTROPY_BETA = 0.01  # 0.01 for discrete, 0.0 for continuous
