@@ -19,6 +19,7 @@ from utils import RunningStats, discount, add_histogram
 OUTPUT_RESULTS_DIR = "./"
 
 
+ENV = 'CarRacing-v0'
 EP_MAX = 10000
 GAMMA = 0.99
 LAMBDA = 0.95
@@ -215,25 +216,12 @@ class PPO(object):
 
 
 if __name__ == '__main__':
-    # Discrete environments
-    # ENVIRONMENT = 'CartPole-v1'  # Switch off reward scaling for this
-    # ENVIRONMENT = 'MountainCar-v0'
-    # ENVIRONMENT = 'LunarLander-v2'
-    # ENVIRONMENT = 'Pong-v0'
-
-    # Continuous environments
-    # ENVIRONMENT = 'Pendulum-v0'
-    # ENVIRONMENT = 'MountainCarContinuous-v0'
-    # ENVIRONMENT = 'LunarLanderContinuous-v2'
-    # ENVIRONMENT = 'BipedalWalker-v2'
-    # ENVIRONMENT = 'BipedalWalkerHardcore-v2'
-    ENVIRONMENT = 'CarRacing-v0'
-
+    
     TIMESTAMP = datetime.now().strftime("%Y%m%d-%H%M%S")
-    SUMMARY_DIR = os.path.join(OUTPUT_RESULTS_DIR, "PPO_LSTM", ENVIRONMENT, TIMESTAMP)
+    SUMMARY_DIR = os.path.join(OUTPUT_RESULTS_DIR, "PPO_LSTM", ENV, TIMESTAMP)
 
-    env = gym.make(ENVIRONMENT)
-    env = wrappers.Monitor(env, os.path.join(SUMMARY_DIR, ENVIRONMENT), video_callable=None)
+    env = gym.make(ENV)
+    #env = wrappers.Monitor(env, os.path.join(SUMMARY_DIR, ENVIRONMENT), video_callable=None)
     ppo = PPO(env, SUMMARY_DIR, gpu=False)
 
     if MODEL_RESTORE_PATH is not None:
@@ -338,22 +326,3 @@ if __name__ == '__main__':
                 break
 
     env.close()
-
-    env = gym.make(ENVIRONMENT)
-    env = wrappers.Monitor(env, os.path.join(SUMMARY_DIR, ENVIRONMENT + "_trained"), video_callable=None)
-
-    while True:
-        s = env.reset()
-        ep_r, ep_t = 0, 0
-        lstm_state = ppo.sess.run(ppo.eval_i_state)
-        while True:
-            env.render()
-            a, v, lstm_state = ppo.eval_state(s, lstm_state, stochastic=False)
-            if not ppo.discrete:
-                a = np.clip(a, env.action_space.low, env.action_space.high)
-            s, r, terminal, _ = env.step(a)
-            ep_r += r
-            ep_t += 1
-            if terminal:
-                print("Reward: %.2f" % ep_r, '| Steps: %i' % ep_t)
-                break
