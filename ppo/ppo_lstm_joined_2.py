@@ -25,7 +25,7 @@ GAMMA = 0.99
 LAMBDA = 0.95
 ENTROPY_BETA = 0.01  # 0.01 for discrete, 0.0 for continuous
 LR = 0.00005
-BATCH = 8192  # 128 for discrete, 8192 for continuous
+BATCH = 128  # 128 for discrete, 8192 for continuous; changed to 128
 MINIBATCH = 32
 EPOCHS = 10
 EPSILON = 0.2
@@ -54,7 +54,7 @@ class PPO(object):
         else:
             self.discrete = True
             self.s_dim, self.a_dim = environment.observation_space.shape, environment.action_space.shape[0]  # changed from action_space.shape.n
-            self.actions = tf.placeholder(tf.int32, [None, 1], 'action')
+            self.actions = tf.placeholder(tf.int32, [None, self.a_dim], 'action')  # changed [None, 1] to [None, self.a_dim]
         self.cnn = len(self.s_dim) == 3
         self.greyscale = greyscale  # If not greyscale and using RGB, make sure to divide the images by 255
 
@@ -220,7 +220,7 @@ if __name__ == '__main__':
     TIMESTAMP = datetime.now().strftime("%Y%m%d-%H%M%S")
     SUMMARY_DIR = os.path.join(OUTPUT_RESULTS_DIR, "PPO_LSTM", ENV, TIMESTAMP)
 
-    env = gym.make(ENV)
+    env = gym.make(ENV, verbose=0)
     #env = wrappers.Monitor(env, os.path.join(SUMMARY_DIR, ENVIRONMENT), video_callable=None)
     ppo = PPO(env, SUMMARY_DIR, gpu=False)
 
