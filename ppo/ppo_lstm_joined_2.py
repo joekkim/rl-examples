@@ -46,7 +46,7 @@ class PPO(object):
         config = tf.ConfigProto(log_device_placement=False, device_count={'GPU': gpu})
         config.gpu_options.per_process_gpu_memory_fraction = 0.1
 
-        if len(environment.action_space.shape) > 0:
+        if len(environment.action_space.shape) > 2:  # changed to 2 to flag MultiDiscrete([7 5]) as discrete
             self.discrete = False
             self.s_dim, self.a_dim = environment.observation_space.shape, environment.action_space.shape[0]
             self.a_bound = (environment.action_space.high - environment.action_space.low) / 2
